@@ -1,0 +1,138 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_austin_wegner.Feedthesquid.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+(def fishate 0)
+
+(def (fishmove)
+(set-and-coerce-property! 'fish 'Y 10 'number)
+
+(set-and-coerce-property! 'fish 'X (call-yail-primitive random-integer (*list-for-runtime* 10 290)
+ '( number number)
+ "random integer")
+ 'number)
+
+(set-and-coerce-property! 'fish 'Speed 10 'number)
+
+(set-and-coerce-property! 'fish 'Interval 10 'number)
+
+(set-and-coerce-property! 'fish 'Heading 270 'number)
+
+(set-and-coerce-property! 'fish 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'fish 'Visible #t 'boolean)
+
+ )
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Feed the Squid" 'text)
+)
+;;; ocean
+(add-component Screen1 Canvas ocean (set-and-coerce-property! 'ocean 'BackgroundImage "cartoon-ocean-007.jpg" 'text)
+(set-and-coerce-property! 'ocean 'Height 390 'number)
+(set-and-coerce-property! 'ocean 'Width -2 'number)
+)
+;;; fish
+(add-component ocean ImageSprite fish (set-and-coerce-property! 'fish 'Height 60 'number)
+(set-and-coerce-property! 'fish 'Picture "cutebluefish.png" 'text)
+(set-and-coerce-property! 'fish 'Rotates #f 'boolean)
+(set-and-coerce-property! 'fish 'Width 45 'number)
+(set-and-coerce-property! 'fish 'X 27 'number)
+(set-and-coerce-property! 'fish 'Y 5 'number)
+)
+(define-event fish EdgeReached( edge )
+ (set-this-form)
+ (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value edge)
+ -1)
+ '( any any)
+ "=")
+ (begin (call-component-method 'bubblessound 'Play (*list-for-runtime*)
+ '())
+
+(set-and-coerce-property! 'fish 'Enabled #f 'boolean)
+
+(set-and-coerce-property! 'fish 'Visible #f 'boolean)
+
+(set-and-coerce-property! 'fish 'Y 123 'number)
+
+)
+)
+
+)
+;;; squid
+(add-component ocean ImageSprite squid (set-and-coerce-property! 'squid 'Height -2 'number)
+(set-and-coerce-property! 'squid 'Picture "giantsquid2.gif" 'text)
+(set-and-coerce-property! 'squid 'Width 50 'number)
+(set-and-coerce-property! 'squid 'X 2 'number)
+(set-and-coerce-property! 'squid 'Y 304 'number)
+)
+(define-event squid CollidedWith( other )
+ (set-this-form)
+ (call-component-method 'omnomnomsound 'Play (*list-for-runtime*)
+ '())
+
+(set-and-coerce-property! 'fish 'Visible #f 'boolean)
+
+((get-var fishmove))
+
+(set-var! fishate  (call-yail-primitive + (*list-for-runtime* (get-var fishate)
+ 1)
+ '( number number)
+ "+")
+)
+
+(set-and-coerce-property! 'score 'Text (call-yail-primitive string-append (*list-for-runtime* (get-var fishate)
+)
+ '( text)
+ "make text")
+ 'text)
+
+)
+(define-event squid Dragged( startX  startY  prevX  prevY  currentX  currentY )
+ (set-this-form)
+ (call-component-method 'squid 'MoveTo (*list-for-runtime* (lexical-value currentX)
+ (get-property 'squid 'Y)
+)
+ '( number number)
+)
+
+)
+;;; HorizontalArrangement1
+(add-component Screen1 HorizontalArrangement HorizontalArrangement1 )
+;;; start
+(add-component HorizontalArrangement1 Button start (set-and-coerce-property! 'start 'Text "Start" 'text)
+)
+(define-event start Click()
+ (set-this-form)
+ (set-and-coerce-property! 'squid 'X 150 'number)
+
+(set-and-coerce-property! 'squid 'Y 375 'number)
+
+((get-var fishmove))
+
+(set-var! fishate  0)
+
+(set-and-coerce-property! 'score 'Text (call-yail-primitive string-append (*list-for-runtime* (get-var fishate)
+)
+ '( text)
+ "make text")
+ 'text)
+
+)
+;;; Label1
+(add-component HorizontalArrangement1 Label Label1 (set-and-coerce-property! 'Label1 'Text "Score:" 'text)
+(set-and-coerce-property! 'Label1 'TextAlignment 1 'number)
+)
+;;; score
+(add-component HorizontalArrangement1 Button score (set-and-coerce-property! 'score 'FontTypeface 3 'number)
+(set-and-coerce-property! 'score 'Text "0" 'text)
+)
+;;; bubblessound
+(add-component Screen1 Sound bubblessound (set-and-coerce-property! 'bubblessound 'Source "NzU3OTQ4NDc3NTgwNjY_2o6q4pu4VoU.mp3" 'text)
+)
+;;; omnomnomsound
+(add-component Screen1 Sound omnomnomsound (set-and-coerce-property! 'omnomnomsound 'Source "SandwichEat09.wav" 'text)
+)
+(init-runtime  #f)
+
